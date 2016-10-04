@@ -4,7 +4,7 @@
 		this.level = level;
 	}
 	show() {
-		console.log(this);		
+		console.log(`${this.name}, уровень ${this.level}`);		
 	}
 }
 
@@ -36,10 +36,10 @@ var found = new PokemonList(new Pokemon('Лена', 12), new Pokemon('Катя',
 found.add('Татьяна', 16);
 
 PokemonList.prototype.show = function() {
-	console.log(`Length: ${this.length}`);
+	console.log(`Список пакемонов (кол-во ${this.length}):`);
 	
 	for (let el of this)
-		console.log(el);
+		console.log(`${el.name}, уровень ${el.level}`);
 }
 
 lost.show();
