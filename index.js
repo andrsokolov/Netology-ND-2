@@ -13,7 +13,7 @@
 class PokemonList extends Array {	
 	constructor(...items) {
 		
-		items = items.filter(function(el){return el instanceof Pokemon; })
+		items = items.filter(el => el instanceof Pokemon);
 		
 		super(...items);
 	}
@@ -75,7 +75,7 @@ PokemonList.prototype.max = function() {
 	
 	var maxLevel = Math.max(...this);
 		
-	return this.find(function(el){ return el.level === maxLevel; });
+	return this.find(el => el.level === maxLevel);
 }
 
 console.log(lost.max());
