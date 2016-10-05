@@ -4,25 +4,30 @@
 		this.level = level;
 	}
 	show() {
-		console.log(`${this.name}, уровень ${this.level}`);		
+		console.log(`${this.name}, уровень ${this.level}`);	
+
+		return this;
 	}
 }
 
 class PokemonList extends Array {	
 	constructor(...items) {
+		
+		items = items.filter(function(el){return el instanceof Pokemon; })
+		
 		super(...items);
-		console.log(this);
 	}
 	add(name, level) {
 		this.push(new Pokemon(name, level));
-		console.log(this);
+		
+		return this;
 	}
 }
 
 var p = new Pokemon('Вася', 2);
 p.show();
 
-var lost = new PokemonList(new Pokemon('Вася', 2), new Pokemon('Коля', 1), new Pokemon('Миша', 3));
+var lost = new PokemonList(new Pokemon('Вася', 2), new Pokemon('Коля', 1), new Pokemon('Миша', 3), 1111111111);
 
 lost.add('Васек', 5);
 lost.add('Бобр', 6);
@@ -39,7 +44,9 @@ PokemonList.prototype.show = function() {
 	console.log(`Список пакемонов (кол-во ${this.length}):`);
 	
 	for (let el of this)
-		console.log(`${el.name}, уровень ${el.level}`);
+		el.show();
+	
+	return this;
 }
 
 lost.show();
@@ -54,16 +61,24 @@ Pokemon.prototype.valueOf = function() {
 	return this.level;
 };
 
+/*
 PokemonList.prototype.max = function() {
 	var max = null;
 	for (let el of this)
 		if(!max || el > max) max = el;
 	return max;
 }
+*/
 
-console.log(lost.max());
-console.log(found.max());
+PokemonList.prototype.max = function() {
+	var maxLevel = Math.max(...this);
+	
+	//в общем случае может быть несколько, возвращаем массив
+	return this.filter(function(el){ return el.level === maxLevel; });
+}
 
+lost.max().show();
+found.max().show();
 
 
 
