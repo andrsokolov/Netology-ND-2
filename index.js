@@ -71,14 +71,17 @@ PokemonList.prototype.max = function() {
 */
 
 PokemonList.prototype.max = function() {
-	var maxLevel = Math.max(...this);
+	if(!this.length) return null;
 	
-	//в общем случае может быть несколько, возвращаем массив
-	return this.filter(function(el){ return el.level === maxLevel; });
+	var maxLevel = Math.max(...this);
+		
+	return this.find(function(el){ return el.level === maxLevel; });
 }
 
-lost.max().show();
-found.max().show();
+console.log(lost.max());
+console.log(found.max());
 
+var k = new PokemonList();
 
+console.log(k.max());
 
