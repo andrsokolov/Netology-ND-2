@@ -34,7 +34,7 @@ fs.mkdirRecurs = function(dirPath, callback) {
 			});			
 		}
 		else if (!error || error.code === 'EEXIST') {	  
-			callback && callback(error, dirPath);
+			callback && callback(error);
 		}
 		else
 			console.log(`Ошибка создания [${dirPath}]`);
@@ -42,16 +42,35 @@ fs.mkdirRecurs = function(dirPath, callback) {
 	});
 };
 
+fs.mkdirRecursAsync = function (dirPath, toHideItems) {
+    return new Promise(function (resolve, reject) {
+        fs.mkdirRecurs(dirPath, function(err, data){
+			
+			if(toHideItems) {
+				var info = '';
+				
+				toHideItems.forEach((pokemon, i) => {
+					info += (i ? '\r\n' : '') + `${pokemon.name}|${pokemon.level}`;					
+				});
+				
+				fs.writeFile(path.join(dirPath, 'pokemon.txt'), info, {flag: 'w'}, err => resolve(toHideItems) );
+			}
+			else
+				fs.unlink(path.join(dirPath, 'pokemon.txt'), err => resolve(toHideItems) );
+        });
+    });
+};
+
 function folderFormat(num) {
 	return ("0" + num).slice(-2);
 }
 
-const hide = (dirPath = '', pokemonList = null) => {
+const hide = (dirPath = '', pokemonList = null, callback) => {
 	if(!pokemonList || !(pokemonList instanceof PokemonList)) return;
 	
 	let toHideCount = Math.min(maxToHide, random(1, pokemonList.length)),
 		toHideItemsByFolders = {};
-	
+		
 	getUnicNumbers(toHideCount, pokemonList.length).forEach (
 			item => {				
 				let folder = 'f' + folderFormat(random(1, 10));
@@ -62,29 +81,27 @@ const hide = (dirPath = '', pokemonList = null) => {
 				toHideItemsByFolders[folder][toHideItemsByFolders[folder].length] = pokemonList[item]; 
 			}
 		);
-		
-	folders.forEach(i => {
-		let folderName = folderFormat(i);
-		
-		fs.mkdirRecurs(path.join(dirPath, folderName), (error, dirPath) => {
-					
-			if(toHideItemsByFolders['f' + folderName]) {
-				var info = '';
-				
-				toHideItemsByFolders['f' + folderName].forEach((pokemon, i) => {
-					info += (i ? '\r\n' : '') + `${pokemon.name}|${pokemon.level}`;					
-				});
-				
-				fs.writeFile(path.join(dirPath, 'pokemon.txt'), info, {flag: 'w'}, err => {
-					console.log('Папка %s:', dirPath);
-					console.log(info);
-				});
-			}
-			else
-				fs.unlink(path.join(dirPath, 'pokemon.txt'), err => {} )
-				
-		});
+	
+	let result = new PokemonList();
+	let foldersInfo = folders.map(i => {
+		var folderName = folderFormat(i);
+		return fs.mkdirRecursAsync(path.join(dirPath, folderName), toHideItemsByFolders['f' + folderName] || null);
 	});
+	
+	Promise.all(foldersInfo).then(function (data) {
+		
+		data.forEach (
+			pokemonArr => {				
+				if(!pokemonArr) return;
+				
+				result = result.concat(pokemonArr);				
+			}
+		)
+				
+		callback && callback(result);
+		
+	});
+	
 }
 
 

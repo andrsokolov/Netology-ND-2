@@ -38,7 +38,9 @@ else if(process.argv[2].toLowerCase() == 'hide') {
 	
 	var list = new PokemonList(pokemons);
 	
-	hs.hide(setRightFolder(process.argv.length < 4 ? '/field/' : process.argv[3], true), list);
+	hs.hide(setRightFolder(process.argv.length < 4 ? '/field/' : process.argv[3], true), list, function(result) {
+		result.show();
+	});
 }
 else if(process.argv[2].toLowerCase() == 'seek') {
 	hs.seek(setRightFolder(process.argv.length < 4 ? '/field/' : process.argv[3], true), function(result) {
