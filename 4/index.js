@@ -131,13 +131,13 @@ class TGen extends stream.Transform {
 			return function() {
 				let c = st.chunks.splice(0, st.chunks.length);
 				
-				st.push(Buffer.concat(c));
+				st.push(c.join(''));
 			}
 		}(this), 1000);
 	}
 	
 	_transform (chunk, encoding, callback) {
-		this.chunks.push(chunk);
+		this.chunks.push('0' + chunk);
 			
 		callback();
 	}
