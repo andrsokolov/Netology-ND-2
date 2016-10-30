@@ -12,8 +12,8 @@ function folderFormat(num) {
 	return ("0" + num).slice(-2);
 }
 
-function hidePokemonsAsync (dirPath, toHideItems) {
-	
+// очередь на создания пути папок /a/b/c/d/:  /a/, /a/b/, /a/b/c/, /a/b/c/d/
+function mkdirWithParentsQueue(dirPath) {
 	let subPaths = [],
 		subPath = dirPath;
 			
@@ -38,6 +38,17 @@ function hidePokemonsAsync (dirPath, toHideItems) {
 		);				
 	});
 	
+	return iter;
+}
+
+
+function hidePokemonsAsync (dirPath, toHideItems) {
+	
+	
+	//очередь на создание пути dirPath
+	let iter = mkdirWithParentsQueue(dirPath);
+	
+	//в конец добавляем спрятать покемона или удалить старый спрятанный
 	iter = iter.then(() => 		
 		new Promise(function (resolve, reject) {
 			
@@ -67,6 +78,7 @@ const hide = (dirPath = '', pokemonList = null, callback) => {
 	let toHideCount = Math.min(maxToHide, random.randomNumber(1, pokemonList.length)),
 		toHideItemsByFolders = {};
 		
+	//генерируем массив "куда прятать"
 	random.getUnicNumbers(toHideCount, pokemonList.length).forEach (
 			item => {				
 				let folder = 'f' + folderFormat(random.randomNumber(1, 10));
@@ -80,6 +92,7 @@ const hide = (dirPath = '', pokemonList = null, callback) => {
 	
 	let result = new PokemonList();
 	
+	//общения на создание каждой папки из списка и спрятать в ней, если требуется, покемонов
 	let foldersInfo = folders.map(i => {
 		var folderName = folderFormat(i);
 		return hidePokemonsAsync(path.join(dirPath, folderName), toHideItemsByFolders['f' + folderName] || null);
