@@ -44,12 +44,7 @@ function mkdirWithParentsQueue(dirPath) {
 
 function hidePokemonsAsync (dirPath, toHideItems) {
 	
-	
-	//очередь на создание пути dirPath
-	let iter = mkdirWithParentsQueue(dirPath);
-	
-	//в конец добавляем спрятать покемона или удалить старый спрятанный
-	iter = iter.then(() => 		
+	return mkdirWithParentsQueue(dirPath).then(() => 		
 		new Promise(function (resolve, reject) {
 			
 			if (toHideItems) {
@@ -66,8 +61,6 @@ function hidePokemonsAsync (dirPath, toHideItems) {
 			
 		})
 	);
-	
-	return iter;
 	
 }
 
