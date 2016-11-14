@@ -63,18 +63,30 @@ routes.post("/", function(req, res) {
         if(err)
             return dbError(err);
 
-        db.collection('users').insert({name: name, phone: phone}, (err, result) => {
+
+        db.collection('users').find({name: name}, {_id:1}).toArray((err, users) => {
 
             if(err)
                 return dbError(err);
 
-            db.close();
+            if(users.length) {
+                db.close();
+                return httpError(res, `Человек с ФИО [${name}] уже существует!`, 400);
+            }
 
-            res.json(
-                { message: 'Человек добавлен' }
-            );
+            db.collection('users').insert({name: name, phone: phone}, (err, result) => {
 
-        });
+                if(err)
+                    return dbError(err);
+
+                db.close();
+
+                res.json(
+                    { message: 'Человек добавлен' }
+                );
+
+            });
+        });        
     });
 });
 
